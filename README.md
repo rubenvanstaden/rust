@@ -1,0 +1,2 @@
+# rust
+Learn rust lang
