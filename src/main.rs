@@ -35,6 +35,7 @@ struct Graph {
 }
 
 impl Graph {
+
     fn new() -> Self {
         Graph {
             visited: HashSet::new(),
@@ -66,11 +67,26 @@ impl Graph {
         println!("process edge: ({}, {})", x, y);
     }
 
-    fn bfs(&mut self, start: Id) -> Option<Vec<Id>> {
+    fn components(&mut self) -> Vec<HashSet<Id>> {
+        let mut comps: Vec<HashSet<Id>> = vec![];
+        for v in 0..self.vertices.len() {
+            let id = v as Id;
+            if !self.visited.contains(&id) {
+                println!("{}", id);
+                let mut component = HashSet::new();
+                self.bfs(id, &mut component);
+                comps.push(component);
+            }
+        }
+        comps
+    }
+
+    fn bfs(&mut self, start: Id, component: &mut HashSet<Id>) -> Option<Vec<Id>> {
         let mut q = VecDeque::new();
         q.push_back(start);
 
         self.visited.insert(start);
+        component.insert(start);
 
         let mut path = vec![start];
 
@@ -90,6 +106,7 @@ impl Graph {
                 if !self.visited.contains(&n) {
                     q.push_back(n);
                     self.visited.insert(n);
+                    component.insert(n);
                     self.process_edge(curr, n, &mut path);
                 }
             }
@@ -108,10 +125,15 @@ fn main() {
     g.add_edge(0, 1);
     g.add_edge(1, 2);
     g.add_edge(2, 3);
+    g.add_edge(4, 5);
 
     g.print();
 
-    let path = g.bfs(0);
+    println!("");
+    println!("Components: {:?}", g.components());
+
+    let mut c = HashSet::new();
+    let path = g.bfs(0, &mut c);
 
     println!("Path: {:?}", path);
 }
