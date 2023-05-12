@@ -82,6 +82,7 @@ impl Graph {
     }
 
     fn bfs(&mut self, start: Id, component: &mut HashSet<Id>) -> Option<Vec<Id>> {
+
         let mut q = VecDeque::new();
         q.push_back(start);
 
