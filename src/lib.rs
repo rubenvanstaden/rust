@@ -1,3 +1,4 @@
+pub mod stack;
 pub mod dfs;
 pub mod cycles;
 pub mod array;
