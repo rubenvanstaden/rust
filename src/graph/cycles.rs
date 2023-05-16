@@ -7,7 +7,6 @@ pub struct Graph {
 }
 
 impl Graph {
-
     pub fn new() -> Self {
         Graph {
             nodes: HashMap::new(),
@@ -18,20 +17,31 @@ impl Graph {
 
     fn postprocess_vertex(&self, _node: Id) {}
 
-    fn process_edge(&self, x: Id, y: Id, parent: &mut Vec<Option<Id>>, backedges: &mut Vec<(Id, Id)>) {
+    fn process_edge(
+        &self,
+        x: Id,
+        y: Id,
+        parent: &mut Vec<Option<Id>>,
+        backedges: &mut Vec<(Id, Id)>,
+    ) {
         if parent[y] != Some(x) {
             backedges.push((x, y));
         }
     }
 
     pub fn cycles(&self) -> Vec<(Id, Id)> {
-
         let mut discovered = HashSet::new();
         let mut processed = HashSet::new();
         let mut parent = vec![None; self.nodes.len()];
         let mut backedges = Vec::new();
 
-        self.dfs(0, &mut discovered, &mut processed, &mut parent, &mut backedges);
+        self.dfs(
+            0,
+            &mut discovered,
+            &mut processed,
+            &mut parent,
+            &mut backedges,
+        );
 
         backedges
     }
