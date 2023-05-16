@@ -1,4 +1,4 @@
 pub mod array;
-pub mod list;
 pub mod graph;
+pub mod list;
 pub mod tree;
