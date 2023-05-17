@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 
 type Id = usize;
+type Time = usize;
 type Stack = Vec<Id>;
-type Nodes = HashMap<Id, Vertex>;
 
 pub enum Edge {
     Tree,
@@ -37,82 +37,126 @@ impl Vertex {
 }
 
 pub struct Graph {
-    pub adj: HashMap<Id, Vec<Id>>,
+    directed: bool,
+    adj: HashMap<Id, Vec<Id>>,
 }
 
 impl Graph {
-    pub fn new() -> Self {
+    pub fn new(directed: bool) -> Self {
         Graph {
+            directed,
             adj: HashMap::new(),
         }
     }
 
-    pub fn topological_sort(&self, nodes: &mut Nodes) -> Stack {
-
+    pub fn topological_sort(&self) -> Stack {
+        let mut time = 0;
         let mut stack = Stack::new();
+        let mut ancestor = Vec::new();
+        let mut degree = Vec::new();
+        let mut entry_time = vec![0; self.adj.len()];
+        let mut discovered = vec![false; self.adj.len()];
+        let mut processed = vec![false; self.adj.len()];
+        let mut parent = vec![None; self.adj.len()];
 
-        for (id, _neighbors) in &self.adj {
-            if !nodes[&id].discovered {
-                self.dfs(*id, nodes, &mut stack);
+        for n in self.adj.keys() {
+            if !discovered[*n] {
+                self.dfs(
+                    *n,
+                    &mut time,
+                    &mut entry_time,
+                    &mut degree,
+                    &mut stack,
+                    &mut discovered,
+                    &mut processed,
+                    &mut parent,
+                    &mut ancestor,
+                );
             }
         }
 
         stack
     }
 
-    pub fn process_edge(&self, v: Id, u: Id, nodes: &mut Nodes) {
+    pub fn postprocess_vertex(&self, v: Id, stack: &mut Stack) {
+        stack.push(v);
+    }
 
-        let x = match nodes.get(&v) {
-            None => return,
-            Some(n) => n,
-        };
-
-        let y = match nodes.get(&u) {
-            None => return,
-            Some(n) => n,
-        };
-
-        match edge(x, y) {
-            Edge::Back => println!("Back end!"),
+    pub fn process_edge(
+        &self,
+        v: Id,
+        u: Id,
+        entry_time: &mut Vec<usize>,
+        discovered: &Vec<bool>,
+        processed: &Vec<bool>,
+        parent: &Vec<Option<Id>>,
+    ) {
+        match edge(v, u, entry_time, discovered, processed, parent) {
+            Edge::Back => println!("Back Edge!"),
             _ => return,
         }
     }
 
-    pub fn dfs(&self, root: Id, nodes: &mut Nodes, stack: &mut Stack) {
+    pub fn dfs(
+        &self,
+        root: Id,
+        time: &mut Time,
+        entry_time: &mut Vec<usize>,
+        degree: &mut Vec<usize>,
+        stack: &mut Stack,
+        discovered: &mut Vec<bool>,
+        processed: &mut Vec<bool>,
+        parent: &mut Vec<Option<Id>>,
+        ancestor: &mut Vec<Id>,
+    ) {
+        discovered[root] = true;
+        *time += 1;
+        entry_time[root] = *time;
 
-        let v = match nodes.get_mut(&root) {
-            None => return,
-            Some(n) => n,
-        };
-
-        v.discovered = true;
-
-        let parent = v.parent;
-
-        if let Some(neighbors) = self.adj.get(&v.id) {
-            for &id in neighbors {
-                if let Some(u) = nodes.get_mut(&id) {
-                    if !u.discovered {
-                        u.parent = Some(root);
-                        self.process_edge(v.id, u.id, nodes);
-                        self.dfs(u.id, nodes, stack);
-                    } else if !u.processed && parent != Some(u.id) {
-                        
-                    }
+        if let Some(neighbors) = self.adj.get(&root) {
+            for &u in neighbors {
+                if !discovered[u] {
+                    parent[u] = Some(root);
+                    self.process_edge(root, u, entry_time, discovered, processed, parent);
+                    self.dfs(
+                        u, time, entry_time, degree, stack, discovered, processed, parent, ancestor,
+                    )
+                } else if !processed[u] && parent[root] != Some(u) {
+                    self.process_edge(root, u, entry_time, discovered, processed, parent);
+                } else if self.directed {
+                    self.process_edge(root, u, entry_time, discovered, processed, parent);
                 }
             }
         }
+
+        self.postprocess_vertex(root, stack);
+
+        *time += 1;
     }
 }
 
-fn edge(v: &Vertex, u: &Vertex) -> Edge {
-
-    if u.parent == Some(v.id) {
-        return Edge::Tree
+fn edge(
+    v: Id,
+    u: Id,
+    entry_time: &Vec<Time>,
+    discovered: &Vec<bool>,
+    processed: &Vec<bool>,
+    parent: &Vec<Option<Id>>,
+) -> Edge {
+    if parent[u] == Some(v) {
+        return Edge::Tree;
     }
 
-    if u.discovered && !u.processed {
+    if discovered[u] && !processed[u] {
         return Edge::Back;
+    }
+
+    if processed[u] && entry_time[u] > entry_time[v] {
+        return Edge::Forward;
+    }
+
+    if processed[u] && entry_time[u] < entry_time[v] {
+        return Edge::Cross;
     }
 
     Edge::Unknown
@@ -125,17 +169,9 @@ mod test {
     #[test]
     fn test() {
 
-        let mut nodes = Nodes::new();
+        println!("\nTOPOLOGICAL SORT:");
 
-        nodes.insert(0, Vertex::new(0));
-        nodes.insert(1, Vertex::new(1));
-        nodes.insert(2, Vertex::new(2));
-        nodes.insert(3, Vertex::new(3));
-        nodes.insert(4, Vertex::new(4));
-        nodes.insert(5, Vertex::new(5));
-        nodes.insert(6, Vertex::new(6));
-
-        let mut g = Graph::new();
+        let mut g = Graph::new(true);
 
         g.adj.insert(0, vec![1, 2]);
         g.adj.insert(1, vec![2, 3]);
@@ -145,8 +181,10 @@ mod test {
         g.adj.insert(5, vec![4]);
         g.adj.insert(6, vec![0, 5]);
 
-        let sorted = g.topological_sort(&mut nodes);
+        let sorted = g.topological_sort();
 
-        println!("{:?}", sorted);
+        // (G, A, B, C, F, E, D)
+        // (6, 0, 1, 2, 5, 4, 3)
+        assert_eq!(sorted, vec![3,4,5,2,1,0,5]);
     }
 }

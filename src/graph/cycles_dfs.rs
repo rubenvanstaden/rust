@@ -21,7 +21,6 @@ impl Graph {
             for &n in neighbors {
 
                 if !visited.contains(&n) {
-                    println!("{}", n);
                     visited.insert(n);
                     self.dfs(n, visited);
                 }
@@ -46,7 +45,5 @@ mod test {
 
         let mut visited = HashSet::new();
         g.dfs(1, &mut visited);
-
-        //assert_eq!();
     }
 }

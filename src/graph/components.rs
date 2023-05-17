@@ -20,11 +20,11 @@ impl Vertex {
     }
 
     fn preprocess(&self) {
-        println!("preprocess: {}", self.id);
+        //println!("preprocess: {}", self.id);
     }
 
     fn postprocess(&self) {
-        println!("postprocess: {}", self.id);
+        //println!("postprocess: {}", self.id);
     }
 }
 
@@ -47,7 +47,7 @@ impl Graph {
     fn print(&self) {
         println!("Num Vertices: {}", self.vertices.len());
         for (id, node) in &self.vertices {
-            println!("{}: {}", id, node.neighbors.len());
+            //println!("{}: {}", id, node.neighbors.len());
         }
     }
 
@@ -64,7 +64,7 @@ impl Graph {
 
     fn process_edge(&self, x: Id, y: Id, path: &mut Vec<Id>) {
         path.push(y);
-        println!("process edge: ({}, {})", x, y);
+        //println!("process edge: ({}, {})", x, y);
     }
 
     fn components(&mut self) -> Vec<HashSet<Id>> {
@@ -72,7 +72,7 @@ impl Graph {
         for v in 0..self.vertices.len() {
             let id = v as Id;
             if !self.visited.contains(&id) {
-                println!("{}", id);
+                //println!("{}", id);
                 let mut component = HashSet::new();
                 self.bfs(id, &mut component);
                 comps.push(component);
@@ -130,11 +130,11 @@ fn main() {
 
     g.print();
 
-    println!("");
-    println!("Components: {:?}", g.components());
+    //println!("");
+    //println!("Components: {:?}", g.components());
 
     let mut c = HashSet::new();
     let path = g.bfs(0, &mut c);
 
-    println!("Path: {:?}", path);
+    //println!("Path: {:?}", path);
 }

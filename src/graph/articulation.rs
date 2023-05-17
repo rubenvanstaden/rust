@@ -51,19 +51,19 @@ impl Graph {
     ) {
         match parent[v] {
             None => {
-                println!("Root cut node: {}", v);
+                //println!("Root cut node: {}", v);
             }
             Some(n) => {
                 if ancestor[v] == n {
-                    println!("Parent cut node: {}", n);
+                    //println!("Parent cut node: {}", n);
                 }
 
                 if ancestor[v] == v {
-                    println!("Bridge cut node: {}", n);
+                    //println!("Bridge cut node: {}", n);
 
                     // If v is not a leaf node.
                     if degree[v] > 0 {
-                        println!("Bridge cut node: {}", v);
+                        //println!("Bridge cut node: {}", v);
                     }
                 }
 
@@ -87,7 +87,7 @@ impl Graph {
         processed: &Vec<bool>,
         ancestor: &mut Vec<Id>,
     ) {
-        println!("({}, {})", v, u);
+        //println!("({}, {})", v, u);
 
         match edge_type(v, u, parent, discovered, processed) {
             Edge::Tree => {
@@ -101,7 +101,7 @@ impl Graph {
                 }
             }
             Edge::Unknown => {
-                println!("[*] FAILED!");
+                //println!("[*] FAILED!");
             }
         }
     }
@@ -194,8 +194,8 @@ mod test {
         g.nodes.insert(6, vec![0, 1]);
         g.nodes.insert(7, vec![0]);
 
-        let cutnodes = g.articulation_nodes();
+        let _cutnodes = g.articulation_nodes();
 
-        println!("{:?}", cutnodes);
+        //println!("{:?}", cutnodes);
     }
 }

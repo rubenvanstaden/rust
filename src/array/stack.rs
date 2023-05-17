@@ -15,7 +15,7 @@ impl<T> StackArray<T> {
 
     pub fn push(&mut self, elem: T) {
         if self.is_full() {
-            println!("Stack is full!");
+            //println!("Stack is full!");
             return;
         }
         self.top = self.top + 1;
@@ -24,7 +24,7 @@ impl<T> StackArray<T> {
 
     pub fn pop(&mut self) -> Option<T> {
         if self.is_empty() {
-            println!("Stack is empty!");
+            //println!("Stack is empty!");
         }
         self.top = self.top - 1;
         self.elems.pop()
@@ -32,7 +32,7 @@ impl<T> StackArray<T> {
 
     pub fn peek(&self) -> &T {
         if self.is_empty() {
-            println!("Stack is empty!");
+            //println!("Stack is empty!");
         }
         &self.elems[self.top - 1]
     }

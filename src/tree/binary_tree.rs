@@ -72,7 +72,7 @@ impl Tree {
             Some(node) => node.traverse(),
         };
 
-        println!("{}", self.val);
+        //println!("{}", self.val);
 
         match &self.right {
             None => (),

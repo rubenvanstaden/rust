@@ -34,6 +34,6 @@ fn main() {
         .iter().cloned().collect();
     let graph = Graph::new(vertices, edges);
 
-    println!("{:?}", graph.is_two_colorable()); // true
+    //println!("{:?}", graph.is_two_colorable()); // true
 }
 
