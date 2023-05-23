@@ -168,7 +168,6 @@ mod test {
 
     #[test]
     fn test() {
-
         println!("\nTOPOLOGICAL SORT:");
 
         let mut g = Graph::new(true);
@@ -185,6 +184,6 @@ mod test {
 
         // (G, A, B, C, F, E, D)
         // (6, 0, 1, 2, 5, 4, 3)
-        assert_eq!(sorted, vec![3,4,5,2,1,0,5]);
+        assert_eq!(sorted, vec![3, 4, 5, 2, 1, 0, 5]);
     }
 }
