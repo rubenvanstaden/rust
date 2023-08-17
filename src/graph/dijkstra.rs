@@ -8,7 +8,6 @@ pub struct Graph {
 }
 
 impl Graph {
-
     pub fn new() -> Self {
         Graph {
             nodes: HashMap::new(),
@@ -16,7 +15,6 @@ impl Graph {
     }
 
     pub fn dijkstra(&self, start: usize) -> (i32, Vec<i32>) {
-
         // Create a visited tree.
         let mut visited = vec![false; self.nodes.len()];
 
@@ -28,7 +26,6 @@ impl Graph {
         let mut v = start;
 
         while !visited[v] {
-
             println!("curr: {}", v);
 
             // Add node to the visited tree.
@@ -49,7 +46,6 @@ impl Graph {
             for nodes in self.nodes.values() {
                 for (u, _) in nodes {
                     if !visited[*u] && dist > distance[*u] {
-
                         // Update inmem var to calculate the MIN.
                         dist = distance[*u];
 
@@ -70,7 +66,6 @@ mod test {
 
     #[test]
     fn test() {
-
         let mut g = Graph::new();
 
         g.nodes.insert(0, vec![(1, 1), (3, 3)]);
